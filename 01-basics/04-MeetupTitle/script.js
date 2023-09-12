@@ -22,7 +22,7 @@ const App = defineComponent({
   data(){
     return{
       currentMeetupId: '1',
-      currentMeetup: '',
+      currentMeetup: {},
     }
   },
 

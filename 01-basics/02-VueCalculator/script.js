@@ -6,40 +6,31 @@ const App = defineComponent({
     name: 'App',
     data(){
         return{
-            inputs: {
-                A_operand:'',
-                B_operand:'',
-                operator: '',
-            },
-            result: '',
+            A_operand:'',
+            B_operand:'',
+            operator: '',
         }
     },
 
     methods: {
-        ifDef(operand){
-            return  operand === '' ? true : false;
-        },
-
-        calculate( a = this.inputs.A_operand, b = this.inputs.B_operand, operator = this.inputs.operator, ifDef = this.ifDef){
-            if(ifDef(a)||ifDef(b)||!operator) return false
-            if(b == 0 && operator == "divide") return this.result = "Ошибка: деление на 0"
+        calculate( a = this.A_operand, b = this.B_operand, operator = this.operator, ifDef = operand => operand === ''){
+            if(ifDef(a)||ifDef(b)||!operator) return '';
+            if(b == 0 && operator == "divide") return "Ошибка: деление на 0";
+            let result
             switch(operator){
-                case "sum": this.result = a + b; break;
-                case "subtract": this.result = a - b; break;
-                case "multiply": this.result = a * b; break;
-                case "divide": this.result = a / b; break;
+                case "sum": result = a + b; break;
+                case "subtract": result = a - b; break;
+                case "multiply": result = a * b; break;
+                case "divide": result = a / b; break;
             }
-            return this.result
+            return result
         },
     },
 
-    watch:{
-        inputs:{
-            deep:true,
-            handler(){
-                this.calculate();
-            }
-        },
+    computed:{
+        result(){
+            return this.calculate()
+        }
     }
 })
 
