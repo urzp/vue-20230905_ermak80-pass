@@ -22,7 +22,8 @@ const App = defineComponent({
   data(){
     return{
       currentMeetupId: '1',
-      currentMeetup: {},
+      currtntMeetuptitle: '',
+      currentMeetup: null,
     }
   },
 
@@ -31,6 +32,7 @@ const App = defineComponent({
       immediate: true,
       async handler(){
         this.currentMeetup = await fetchMeetupById(this.currentMeetupId);
+        this.currtntMeetuptitle = this.currentMeetup.title
       }
     }
   },

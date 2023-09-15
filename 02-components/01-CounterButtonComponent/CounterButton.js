@@ -5,5 +5,20 @@ export default defineComponent({
 
   // Компонент должен иметь входной параметр и порождать событие
 
-  template: `<button type="button">1</button>`,
+  computed:{
+    count_clicks(){
+      return this.count+1
+    }
+  },
+
+  props: {
+    count:{
+      type: Number,
+      default: 0,
+    }
+  },
+
+  emits:['update:count'],
+
+  template: `<button type="button" @click="$emit('update:count', count_clicks)">{{ count }}</button>`,
 });
