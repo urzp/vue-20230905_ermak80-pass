@@ -17,16 +17,20 @@ export default defineComponent({
     return{
       meetup: null,
       error: false,
-      getMetup:async (id)=>{
-        this.meetup = null
-        this.error = false
-        try {
-          this.meetup = await fetchMeetupById(id)
-        } catch (error) {
-          this.error = error
-        }
-      },
+
     }
+  },
+
+  methods:{
+    async getMetup(id){
+      this.meetup = null
+      this.error = false
+      try {
+        this.meetup = await fetchMeetupById(id)
+      } catch (error) {
+        this.error = error
+      }
+    },
   },
 
   props:{
