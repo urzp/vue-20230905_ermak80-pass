@@ -20,10 +20,10 @@ export default defineComponent({
 
   computed:{
     date_text(){
-      return new Date(this.date).toLocaleDateString('en-En', { month: 'short', day: 'numeric' , year: 'numeric' })
+      return new Date(this.date).toLocaleDateString(navigator.language, { month: 'short', day: 'numeric' , year: 'numeric' })
     },
     date_attr(){
-      return new Date(this.date).toLocaleDateString('fr-CA', { year: 'numeric', month: '2-digit', day: '2-digit'  })
+      return new Date(this.date).toISOString().substring(0, 10)
     }
   },
 
