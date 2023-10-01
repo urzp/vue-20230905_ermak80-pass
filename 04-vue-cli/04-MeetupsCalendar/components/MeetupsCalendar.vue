@@ -3,12 +3,19 @@
     <div class="calendar-view__controls">
       <div class="calendar-view__controls-inner">
         <button class="calendar-view__control-left" type="button" aria-label="Previous month"></button>
-        <div class="calendar-view__date">Декабрь 2022 г.</div>
+        <div class="calendar-view__date">{{ titelCalendat() }}</div>
         <button class="calendar-view__control-right" type="button" aria-label="Next month"></button>
       </div>
     </div>
 
     <div class="calendar-view__grid">
+      <div v-for="day, i in calendarGrid" :key = i class="calendar-view__cell calendar-view__cell_inactive" tabindex="0">
+        <div class="calendar-view__cell-day">{{ day.getDate() }}</div>
+        <div class="calendar-view__cell-content"></div>
+      </div>
+    </div>
+
+    <!-- <div class="calendar-view__grid">
       <div class="calendar-view__cell calendar-view__cell_inactive" tabindex="0">
         <div class="calendar-view__cell-day">28</div>
         <div class="calendar-view__cell-content"></div>
@@ -37,7 +44,7 @@
         <div class="calendar-view__cell-day">4</div>
         <div class="calendar-view__cell-content"></div>
       </div>
-      <!-- -->
+      
       <div class="calendar-view__cell" tabindex="0">
         <div class="calendar-view__cell-day">5</div>
         <div class="calendar-view__cell-content"></div>
@@ -66,7 +73,7 @@
         <div class="calendar-view__cell-day">11</div>
         <div class="calendar-view__cell-content"></div>
       </div>
-      <!-- -->
+      
       <div class="calendar-view__cell" tabindex="0">
         <div class="calendar-view__cell-day">12</div>
         <div class="calendar-view__cell-content">
@@ -98,7 +105,7 @@
         <div class="calendar-view__cell-day">18</div>
         <div class="calendar-view__cell-content"></div>
       </div>
-      <!-- -->
+     
       <div class="calendar-view__cell" tabindex="0">
         <div class="calendar-view__cell-day">19</div>
         <div class="calendar-view__cell-content"></div>
@@ -127,7 +134,7 @@
         <div class="calendar-view__cell-day">25</div>
         <div class="calendar-view__cell-content"></div>
       </div>
-      <!-- -->
+      
       <div class="calendar-view__cell" tabindex="0">
         <div class="calendar-view__cell-day">26</div>
         <div class="calendar-view__cell-content"></div>
@@ -156,7 +163,7 @@
         <div class="calendar-view__cell-day">1</div>
         <div class="calendar-view__cell-content"></div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -164,11 +171,41 @@
 export default {
   name: 'MeetupsCalendar',
 
+  data() {
+    return {
+      date: new Date(),
+    };
+  },
+
   props: {
     meetups: {
       type: Array,
       required: true,
     },
+  },
+
+  methods:{
+      titelCalendat(){
+        return this.date.toLocaleDateString(navigator.language, {
+          month: 'long',
+          year: 'numeric',
+        });
+      },
+      daysInThisMonth() {
+        let now = new Date();
+        return new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+      }
+  },
+
+  computed:{
+    calendarGrid(){
+      let output = [];
+      let indexFerstDayMonth = [7, 1, 2, 3, 4, 5, 6][new Date(this.date.setDate(1)).getDay()]
+      for(let i=0; i<35; i++){
+        output[i] =  new Date(new Date().setDate(i + 2 - indexFerstDayMonth))
+      }
+      return output
+    }
   },
 };
 </script>
