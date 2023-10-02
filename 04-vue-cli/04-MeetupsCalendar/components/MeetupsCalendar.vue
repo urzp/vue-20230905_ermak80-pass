@@ -2,16 +2,18 @@
   <div class="calendar-view">
     <div class="calendar-view__controls">
       <div class="calendar-view__controls-inner">
-        <button class="calendar-view__control-left" type="button" aria-label="Previous month"></button>
+        <button class="calendar-view__control-left" type="button" aria-label="Previous month" @click="selectedMonthNumber--"></button>
         <div class="calendar-view__date">{{ titelCalendat() }}</div>
-        <button class="calendar-view__control-right" type="button" aria-label="Next month"></button>
+        <button class="calendar-view__control-right" type="button" aria-label="Next month" @click="selectedMonthNumber++"></button>
       </div>
     </div>
 
     <div class="calendar-view__grid">
-      <div v-for="day, i in calendarGrid" :key = i class="calendar-view__cell calendar-view__cell_inactive" tabindex="0">
-        <div class="calendar-view__cell-day">{{ day.getDate() }}</div>
-        <div class="calendar-view__cell-content"></div>
+      <div v-for="item, i in calendarGrid" :key = i class="calendar-view__cell"  :class="{'calendar-view__cell_inactive':item.inactive}" tabindex="0">
+        <div class="calendar-view__cell-day">{{ item.day.getDate() }}</div>
+        <div class="calendar-view__cell-content">
+          <a v-for="meetap in item.meetups" :key = meetap.id href="/meetups/1" class="calendar-event">{{ meetap.title }}</a>
+        </div>
       </div>
     </div>
 
@@ -173,7 +175,7 @@ export default {
 
   data() {
     return {
-      date: new Date(),
+      selectedMonthNumber: new Date().getMonth(),
     };
   },
 
@@ -186,23 +188,37 @@ export default {
 
   methods:{
       titelCalendat(){
-        return this.date.toLocaleDateString(navigator.language, {
+        return this.selectedMonth.toLocaleDateString(navigator.language, {
           month: 'long',
           year: 'numeric',
         });
       },
-      daysInThisMonth() {
-        let now = new Date();
-        return new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+      daysInThisMonth(date) {
+        return new Date(date.getFullYear(), date.getMonth()+1, 0).getDate();
       }
   },
 
   computed:{
+    selectedMonth(){
+      return new Date(new Date().getFullYear(), this.selectedMonthNumber, 1)
+    },
     calendarGrid(){
       let output = [];
-      let indexFerstDayMonth = [7, 1, 2, 3, 4, 5, 6][new Date(this.date.setDate(1)).getDay()]
+      let ferstDayMonth = this.selectedMonth
+      let weekFerstDayMonth = [7, 1, 2, 3, 4, 5, 6][ferstDayMonth.getDay()]
+      let lasDay = this.daysInThisMonth(ferstDayMonth);
+      console.log(weekFerstDayMonth)
       for(let i=0; i<35; i++){
-        output[i] =  new Date(new Date().setDate(i + 2 - indexFerstDayMonth))
+        let dayGrid = i + 2 - weekFerstDayMonth
+        let dateGrid = new Date(new Date(ferstDayMonth).setDate(dayGrid))
+        let inactive  = (dayGrid>lasDay)||(dayGrid <= 0)
+        if( i==28 && inactive ){ i =36; continue }
+        let meetups = this.meetups.filter(item => new Date(item.date).toDateString() == dateGrid.toDateString())
+        output[i] = {
+          day: dateGrid,
+          inactive,
+          meetups,
+        }
       }
       return output
     }
