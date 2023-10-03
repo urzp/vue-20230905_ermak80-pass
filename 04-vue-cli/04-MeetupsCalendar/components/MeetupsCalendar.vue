@@ -207,7 +207,6 @@ export default {
       let ferstDayMonth = this.selectedMonth
       let weekFerstDayMonth = [7, 1, 2, 3, 4, 5, 6][ferstDayMonth.getDay()]
       let lasDay = this.daysInThisMonth(ferstDayMonth);
-      console.log(weekFerstDayMonth)
       for(let i=0; i<35; i++){
         let dayGrid = i + 2 - weekFerstDayMonth
         let dateGrid = new Date(new Date(ferstDayMonth).setDate(dayGrid))
