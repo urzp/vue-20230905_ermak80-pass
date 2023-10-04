@@ -36,16 +36,8 @@ export default {
 
   methods: {
     handleSubmit() {
-      // let urlParams = new URLSearchParams(window.location.search);
-      // let paramFrom = urlParams.get('from');
-      let f = document.getElementsByClassName('form')[0]
-      let fd = new FormData(f)
-      let paramFrom = fd.get('from')
-      console.log(paramFrom)
-      this.goTo(!paramFrom?'/':paramFrom)
-    },
-    goTo(path){
-      this.$router.push(path);
+      let path = this.$route.query.from
+      this.$router.push(!path?'/':path);
     },
   },
 };
