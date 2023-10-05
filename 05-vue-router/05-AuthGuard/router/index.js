@@ -14,10 +14,6 @@ const router = createRouter({
       meta: {
         requireGuest: true,
       },
-      beforeEnter: (to, from) => {
-        console.log(from)
-        return isAuthenticated()?'/':true
-      },
       component: () => import('../views/PageLogin.vue'),
     },
     {
@@ -25,19 +21,12 @@ const router = createRouter({
       meta: {
         requireGuest: true,
       },
-      beforeEnter: (to, from) => {
-        return isAuthenticated()?'/':true
-      },
       component: () => import('../views/PageRegister.vue'),
     },
     {
       path: '/meetups/create',
-      query: {from:'/meetups/create'},
       meta: {
         requireAuth: true,
-      },
-      beforeEnter: (to, from) => {
-        return isAuthenticated()?true:'/login'
       },
       component: () => import('../views/PageCreateMeetup.vue'),
     },
@@ -46,12 +35,15 @@ const router = createRouter({
       meta: {
         requireAuth: true,
       },
-      beforeEnter: (to, from) => {
-        return isAuthenticated()?true:'/login'
-      },
       component: () => import('../views/PageEditMeetup.vue'),
     },
   ],
 });
+
+router.beforeEach((to, from) => {
+  if(to.meta.requireGuest&&isAuthenticated()) return "/"
+  if(to.meta.requireAuth&&!isAuthenticated()) return {path: '/login',query: {from:to.path}}
+  return true
+})
 
 export { router };
