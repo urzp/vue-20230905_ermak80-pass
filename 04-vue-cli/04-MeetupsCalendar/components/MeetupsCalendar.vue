@@ -3,7 +3,7 @@
     <div class="calendar-view__controls">
       <div class="calendar-view__controls-inner">
         <button class="calendar-view__control-left" type="button" aria-label="Previous month" @click="selectedMonthNumber--"></button>
-        <div class="calendar-view__date">{{ titelCalendat() }}</div>
+        <div class="calendar-view__date">{{ titelCalendat }}</div>
         <button class="calendar-view__control-right" type="button" aria-label="Next month" @click="selectedMonthNumber++"></button>
       </div>
     </div>
@@ -187,18 +187,19 @@ export default {
   },
 
   methods:{
-      titelCalendat(){
-        return this.selectedMonth.toLocaleDateString(navigator.language, {
-          month: 'long',
-          year: 'numeric',
-        });
-      },
+
       daysInThisMonth(date) {
         return new Date(date.getFullYear(), date.getMonth()+1, 0).getDate();
       }
   },
 
   computed:{
+    titelCalendat(){
+        return this.selectedMonth.toLocaleDateString(navigator.language, {
+          month: 'long',
+          year: 'numeric',
+        });
+      },
     selectedMonth(){
       return new Date(new Date().getFullYear(), this.selectedMonthNumber, 1)
     },

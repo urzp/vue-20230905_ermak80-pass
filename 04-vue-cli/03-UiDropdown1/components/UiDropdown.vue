@@ -1,12 +1,12 @@
 <template>
   <div class="dropdown" :class="{'dropdown_opened':dropdown}">
-    <button type="button" class="dropdown__toggle" :class ="{'dropdown__toggle_icon':haveAnyIcon()}" @click="toggle_menu()">
+    <button type="button" class="dropdown__toggle" :class ="{'dropdown__toggle_icon':haveAnyIcon}" @click="toggle_menu()">
       <UiIcon v-if="!!carrentSelect.icon" :icon="carrentSelect.icon" class="dropdown__icon" />
       <span>{{ carrentSelect.text }}</span>
     </button>
 
     <div v-show="dropdown" class="dropdown__menu" role="listbox">
-      <button v-for="item, i in options" :key="i" class="dropdown__item" :class="{'dropdown__item_icon':haveAnyIcon()}" 
+      <button v-for="item, i in options" :key="i" class="dropdown__item" :class="{'dropdown__item_icon':haveAnyIcon}" 
       role="option" type="button" @click="selectItem(item.value)">
         <UiIcon v-if="!!item.icon" :icon="item.icon" class="dropdown__icon" />
         {{ item.text }}
@@ -37,12 +37,6 @@ export default {
     toggle_menu(){
       this.dropdown = this.dropdown? false: true
     },
-    getOption(key){
-      return this.options.find(item => item.value == key)
-    },
-    haveAnyIcon(){
-      return !!this.options.find(item => !!item.icon)
-    },
   },
 
   props: {
@@ -66,8 +60,11 @@ export default {
       if(!this.modelValue) {
         return {text:this.title}
       }else{
-        return this.getOption(this.modelValue)
+        return this.options.find(item => item.value == this.modelValue)
       } 
+    },
+    haveAnyIcon(){
+      return !!this.options.find(item => !!item.icon)
     },
   }
 
