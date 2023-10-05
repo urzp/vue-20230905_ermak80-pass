@@ -1,10 +1,28 @@
 <template>
-  <a class="tabs__tab tabs__tab_active" role="tab">Tab</a>
+  <RouterLink :to="to" class="tabs__tab" activeClass ="tabs__tab_active" role="tab"><slot /></RouterLink>
 </template>
 
 <script>
+import { stringifyQuery } from 'vue-router';
+
 export default {
   name: 'UiTabsLink',
+  data(){
+    return{
+      
+    }
+  },
+  props:{
+    to:{
+      type: Object,
+      required: true,
+    },
+  },
+  computed: {
+    test(){
+      return this.$forceUpdate.params
+    },
+  }
 };
 </script>
 
