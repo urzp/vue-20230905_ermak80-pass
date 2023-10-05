@@ -1,18 +1,15 @@
 <template>
-  <div class="dropdown dropdown_opened">
-    <button type="button" class="dropdown__toggle dropdown__toggle_icon">
-      <UiIcon icon="tv" class="dropdown__icon" />
-      <span>Title</span>
+  <div class="dropdown" :class="{'dropdown_opened':dropdown}">
+    <button type="button" class="dropdown__toggle" :class ="{'dropdown__toggle_icon':haveAnyIcon}" @click="toggle_menu()">
+      <UiIcon v-if="!!carrentSelect.icon" :icon="carrentSelect.icon" class="dropdown__icon" />
+      <span>{{ carrentSelect.text }}</span>
     </button>
 
-    <div class="dropdown__menu" role="listbox">
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        <UiIcon icon="tv" class="dropdown__icon" />
-        Option 1
-      </button>
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        <UiIcon icon="tv" class="dropdown__icon" />
-        Option 2
+    <div v-show="dropdown" class="dropdown__menu" role="listbox">
+      <button v-for="item, i in options" :key="i" class="dropdown__item" :class="{'dropdown__item_icon':haveAnyIcon}" 
+      role="option" type="button" @click="selectItem(item.value)">
+        <UiIcon v-if="!!item.icon" :icon="item.icon" class="dropdown__icon" />
+        {{ item.text }}
       </button>
     </div>
   </div>
@@ -25,6 +22,52 @@ export default {
   name: 'UiDropdown',
 
   components: { UiIcon },
+
+  data(){
+    return {
+      dropdown: false,
+    };
+  },
+
+  methods:{
+    selectItem(val){
+      this.dropdown=false;
+      this.$emit('update:modelValue',val)
+    },
+    toggle_menu(){
+      this.dropdown = this.dropdown? false: true
+    },
+  },
+
+  props: {
+    options:{
+      type: Array,
+      required: true,
+    }, 
+    modelValue: {
+      type: String,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+  },
+
+  emits:['update:modelValue'],
+
+  computed:{
+    carrentSelect(){
+      if(!this.modelValue) {
+        return {text:this.title}
+      }else{
+        return this.options.find(item => item.value == this.modelValue)
+      } 
+    },
+    haveAnyIcon(){
+      return !!this.options.find(item => !!item.icon)
+    },
+  }
+
 };
 </script>
 

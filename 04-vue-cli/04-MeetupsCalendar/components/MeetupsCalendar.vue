@@ -2,13 +2,22 @@
   <div class="calendar-view">
     <div class="calendar-view__controls">
       <div class="calendar-view__controls-inner">
-        <button class="calendar-view__control-left" type="button" aria-label="Previous month"></button>
-        <div class="calendar-view__date">Декабрь 2022 г.</div>
-        <button class="calendar-view__control-right" type="button" aria-label="Next month"></button>
+        <button class="calendar-view__control-left" type="button" aria-label="Previous month" @click="selectedMonthNumber--"></button>
+        <div class="calendar-view__date">{{ titelCalendat }}</div>
+        <button class="calendar-view__control-right" type="button" aria-label="Next month" @click="selectedMonthNumber++"></button>
       </div>
     </div>
 
     <div class="calendar-view__grid">
+      <div v-for="item, i in calendarGrid" :key = i class="calendar-view__cell"  :class="{'calendar-view__cell_inactive':item.inactive}" tabindex="0">
+        <div class="calendar-view__cell-day">{{ item.day.getDate() }}</div>
+        <div class="calendar-view__cell-content">
+          <a v-for="meetap in item.meetups" :key = meetap.id href="/meetups/1" class="calendar-event">{{ meetap.title }}</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div class="calendar-view__grid">
       <div class="calendar-view__cell calendar-view__cell_inactive" tabindex="0">
         <div class="calendar-view__cell-day">28</div>
         <div class="calendar-view__cell-content"></div>
@@ -37,7 +46,7 @@
         <div class="calendar-view__cell-day">4</div>
         <div class="calendar-view__cell-content"></div>
       </div>
-      <!-- -->
+      
       <div class="calendar-view__cell" tabindex="0">
         <div class="calendar-view__cell-day">5</div>
         <div class="calendar-view__cell-content"></div>
@@ -66,7 +75,7 @@
         <div class="calendar-view__cell-day">11</div>
         <div class="calendar-view__cell-content"></div>
       </div>
-      <!-- -->
+      
       <div class="calendar-view__cell" tabindex="0">
         <div class="calendar-view__cell-day">12</div>
         <div class="calendar-view__cell-content">
@@ -98,7 +107,7 @@
         <div class="calendar-view__cell-day">18</div>
         <div class="calendar-view__cell-content"></div>
       </div>
-      <!-- -->
+     
       <div class="calendar-view__cell" tabindex="0">
         <div class="calendar-view__cell-day">19</div>
         <div class="calendar-view__cell-content"></div>
@@ -127,7 +136,7 @@
         <div class="calendar-view__cell-day">25</div>
         <div class="calendar-view__cell-content"></div>
       </div>
-      <!-- -->
+      
       <div class="calendar-view__cell" tabindex="0">
         <div class="calendar-view__cell-day">26</div>
         <div class="calendar-view__cell-content"></div>
@@ -156,7 +165,7 @@
         <div class="calendar-view__cell-day">1</div>
         <div class="calendar-view__cell-content"></div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -164,11 +173,55 @@
 export default {
   name: 'MeetupsCalendar',
 
+  data() {
+    return {
+      selectedMonthNumber: new Date().getMonth(),
+    };
+  },
+
   props: {
     meetups: {
       type: Array,
       required: true,
     },
+  },
+
+  methods:{
+
+      daysInThisMonth(date) {
+        return new Date(date.getFullYear(), date.getMonth()+1, 0).getDate();
+      }
+  },
+
+  computed:{
+    titelCalendat(){
+        return this.selectedMonth.toLocaleDateString(navigator.language, {
+          month: 'long',
+          year: 'numeric',
+        });
+      },
+    selectedMonth(){
+      return new Date(new Date().getFullYear(), this.selectedMonthNumber, 1)
+    },
+    calendarGrid(){
+      let output = [];
+      let ferstDayMonth = this.selectedMonth
+      let weekFerstDayMonth = [7, 1, 2, 3, 4, 5, 6][ferstDayMonth.getDay()]
+      let lasDay = this.daysInThisMonth(ferstDayMonth);
+      for(let i=0; i<35; i++){
+        let dayGrid = i + 2 - weekFerstDayMonth
+        let dateGrid = new Date(new Date(ferstDayMonth).setDate(dayGrid))
+        let inactive  = (dayGrid>lasDay)||(dayGrid <= 0)
+        if( i==28 && inactive ){ i =36; continue }
+        let meetups = this.meetups.filter(item => new Date(item.date).toDateString() == dateGrid.toDateString())
+        output[i] = {
+          day: dateGrid,
+          inactive,
+          meetups,
+        }
+      }
+      return output
+    }
   },
 };
 </script>
