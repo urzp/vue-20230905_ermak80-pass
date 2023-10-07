@@ -1,5 +1,5 @@
 <template>
-  <component :is="tag" class="button" :class="class_button"><slot/></component>
+  <component :is="tag" :type="type" class="button" :class="class_button"><slot/></component>
 </template>
 
 <script>
@@ -13,12 +13,18 @@ export default {
     variant:{
       type:[String, Object, Function],
       default: 'secondary',     
-    },
+    }
   },
   computed:{
     class_button(){
-      return 'button_' + this.variant
+      let classes = []
+      classes.push(this.variant!='button'?'button_' + this.variant:this.variant)
+      if(Object.keys(this.$attrs).includes('block')&&this.$attrs.block !== false&&(this.$attrs.block == ''||this.$attrs.block == true)) classes.push('button_block')
+      return classes
     },
+    type(){
+      return this.tag=='button'?this.tag:null
+    }
   }
 };
 </script>
