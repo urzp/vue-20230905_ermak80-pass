@@ -1,7 +1,7 @@
 <template>
   <div class="image-uploader">
-    <label class="image-uploader__preview image-uploader__preview-loading" style="--bg-url: url('/link.jpeg')">
-      <span class="image-uploader__text">Загрузить изображение</span>
+    <label class="image-uploader__preview" :class ="{'image-uploader__preview-loading':statment.uploading}" :style="`--bg-url: url(${preview})`">
+      <span class="image-uploader__text">{{ statment.message }}</span>
       <input type="file" accept="image/*" class="image-uploader__input" />
     </label>
   </div>
@@ -10,6 +10,58 @@
 <script>
 export default {
   name: 'UiImageUploader',
+  data(){
+    return{
+      statment:{
+        preview: false,
+        uploading:false,
+        uploadet:false,
+        error:false,
+        message:'',
+      }
+    }
+  },
+  methods:{
+    setPreview(){
+      this.statment.preview = true;
+      this.statment.uploading = false;
+      this.statment.uploadet = false;
+      this.statment.error = false;
+      this.statment.message = 'Загрузить изображение';
+    },
+    setUploading(){
+      this.statment.preview = false;
+      this.statment.uploading = true;
+      this.statment.uploadet = false;
+      this.statment.error = false;
+      this.statment.message = 'Загрузка...';
+    },
+    setUploadet(){
+      this.statment.preview = false;
+      this.statment.uploading = false;
+      this.statment.uploadet = true;
+      this.statment.error = false;
+      this.statment.message = '';
+    },
+    setError(message){
+      this.statment.preview = false;
+      this.statment.uploading = false;
+      this.statment.uploadet = false;
+      this.statment.error = true;
+      this.statment.message = message;
+    },
+  },
+  props:{
+    preview:String,
+    uploader:Function,
+  },
+  computed:{
+    updateStatment(){
+      if(!this.preview) this.setPreview()
+      if(this.preview) this.uploadet()
+      return this.statment
+    }
+  }
 };
 </script>
 
