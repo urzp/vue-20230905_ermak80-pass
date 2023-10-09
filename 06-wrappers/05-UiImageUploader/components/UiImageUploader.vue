@@ -1,67 +1,71 @@
 <template>
   <div class="image-uploader">
-    <label class="image-uploader__preview" :class ="{'image-uploader__preview-loading':statment.uploading}" :style="`--bg-url: url(${preview})`">
-      <span class="image-uploader__text">{{ statment.message }}</span>
-      <input type="file" accept="image/*" class="image-uploader__input" />
+    <label class="image-uploader__preview" :class ="{'image-uploader__preview-loading':uploading}" :style="`--bg-url: url(${preview})`">
+      <span class="image-uploader__text">{{ message }}</span>
+      <input ref='input' type="file" accept="image/*" v-bind="$attrs" @change="previewFiles($event.target.files[0])" class="image-uploader__input" />
     </label>
   </div>
 </template>
 
 <script>
 export default {
+  inheritAttrs: false,
   name: 'UiImageUploader',
   data(){
     return{
-      statment:{
-        preview: false,
-        uploading:false,
-        uploadet:false,
-        error:false,
-        message:'',
-      }
+      startUpload:false,
+      selectedWithoutUploder :false,
     }
-  },
-  methods:{
-    setPreview(){
-      this.statment.preview = true;
-      this.statment.uploading = false;
-      this.statment.uploadet = false;
-      this.statment.error = false;
-      this.statment.message = 'Загрузить изображение';
-    },
-    setUploading(){
-      this.statment.preview = false;
-      this.statment.uploading = true;
-      this.statment.uploadet = false;
-      this.statment.error = false;
-      this.statment.message = 'Загрузка...';
-    },
-    setUploadet(){
-      this.statment.preview = false;
-      this.statment.uploading = false;
-      this.statment.uploadet = true;
-      this.statment.error = false;
-      this.statment.message = '';
-    },
-    setError(message){
-      this.statment.preview = false;
-      this.statment.uploading = false;
-      this.statment.uploadet = false;
-      this.statment.error = true;
-      this.statment.message = message;
-    },
   },
   props:{
     preview:String,
-    uploader:Function,
+    uploader: [String, Function, Error],
+    onSelect: [String, Function, Error],
+    onRemove: [String, Function, Error],
   },
   computed:{
-    updateStatment(){
-      if(!this.preview) this.setPreview()
-      if(this.preview) this.uploadet()
-      return this.statment
-    }
-  }
+    message(){
+      let message = ''
+      if (!this.preview) message = 'Загрузить изображение'
+      if (this.preview) message = 'Удалить изображение'
+      if (this.selectedWithoutUploder) message = 'Удалить изображение'
+      if (this.startUpload) message = 'Загрузка...'
+      return message
+    },
+    uploading(){
+      if(this.startUpload) return true
+      if(this.uploader) return true
+      return false
+    },
+  },
+  emits:['select', 'remove', 'error', 'upload'],
+  methods:{
+    async previewFiles(file) {
+      this.$emit('select',file)
+      if(this.uploader) {
+        this.startUpload = true;
+        let result
+        try{
+          result = await this.uploader(file)
+        }catch(err){
+            this.$emit('error',err)
+        }
+        if(result) {
+          this.$emit('upload',result)
+        } else {
+          this.$refs.input.value = ''
+        }
+        this.startUpload = false;
+      }else{
+        this.selectedWithoutUploder =true
+      }
+      if(this.$refs.input.value){
+        
+        this.$emit('remove')
+        this.$refs.input.value = ''
+      } 
+   },
+  },
 };
 </script>
 
