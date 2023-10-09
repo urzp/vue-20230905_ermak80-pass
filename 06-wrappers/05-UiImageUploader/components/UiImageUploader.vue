@@ -1,8 +1,8 @@
 <template>
   <div class="image-uploader">
-    <label class="image-uploader__preview" :class ="{'image-uploader__preview-loading':uploading}" :style="`--bg-url: url(${preview})`">
+    <label class="image-uploader__preview" :class ="{'image-uploader__preview-loading':statmet == Staments.loading}" :style="`--bg-url: url(${img_url})`">
       <span class="image-uploader__text">{{ message }}</span>
-      <input ref='input' type="file" accept="image/*" v-bind="$attrs" @change="previewFiles($event.target.files[0])" class="image-uploader__input" />
+      <component :is="tag" ref='input' type="file" accept="image/*" v-bind="$attrs"  @change="sectedFile($event.target.files[0])" @click="removeImg()" class="image-uploader__input" />
     </label>
   </div>
 </template>
@@ -11,61 +11,86 @@
 export default {
   inheritAttrs: false,
   name: 'UiImageUploader',
+
   data(){
     return{
-      startUpload:false,
-      selectedWithoutUploder :false,
+      Staments:{
+        default:'default',
+        preview:'preview',
+        loading:'loading',
+        loaded:'loaded',
+        reseted:'reseted',
+      },  
+      statmet: '',
+      objUrl: null,
     }
   },
   props:{
     preview:String,
-    uploader: [String, Function, Error],
-    onSelect: [String, Function, Error],
-    onRemove: [String, Function, Error],
+    uploader: [String, Function],
+  },
+  created(){
+    this.statmet = this.Staments.default
+    if(this.preview) this.statmet = this.Staments.preview
   },
   computed:{
+    img_url(){
+      let img_url = ''
+      if(this.statmet==this.Staments.preview) img_url = this.preview
+      if(this.statmet==this.Staments.loaded) img_url = this.objUrl
+      return img_url
+    },
     message(){
       let message = ''
-      if (!this.preview) message = 'Загрузить изображение'
-      if (this.preview) message = 'Удалить изображение'
-      if (this.selectedWithoutUploder) message = 'Удалить изображение'
-      if (this.startUpload) message = 'Загрузка...'
+      switch(this.statmet){
+        case this.Staments.default: message = 'Загрузить изображение';break;
+        case this.Staments.preview: message = 'Удалить изображение';break;
+        case this.Staments.loading: message = 'Загрузка...';break;
+        case this.Staments.loaded: message = 'Удалить изображение';break;
+        case this.Staments.reseted: message = 'Загрузить изображение';break;
+      }
       return message
     },
-    uploading(){
-      if(this.startUpload) return true
-      if(this.uploader) return true
-      return false
-    },
+    tag(){
+      let tag = "input"
+      if(this.statmet == this.Staments.loaded||this.statmet == this.Staments.preview) tag ='button'
+      return tag
+    }
   },
   emits:['select', 'remove', 'error', 'upload'],
   methods:{
-    async previewFiles(file) {
+    async sectedFile(file){
+      this.statmet = this.Staments.loading
       this.$emit('select',file)
-      if(this.uploader) {
-        this.startUpload = true;
+      if(this.uploader){
         let result
         try{
           result = await this.uploader(file)
         }catch(err){
-            this.$emit('error',err)
+          this.$emit('error',err)
         }
         if(result) {
           this.$emit('upload',result)
+          this.objUrl = URL.createObjectURL(file)
+          this.statmet = this.Staments.loaded
         } else {
           this.$refs.input.value = ''
+          this.statmet = this.Staments.default  
         }
-        this.startUpload = false;
       }else{
-        this.selectedWithoutUploder =true
+        this.objUrl = URL.createObjectURL(file)
+        this.statmet = this.Staments.loaded       
       }
-      if(this.$refs.input.value){
-        
-        this.$emit('remove')
-        this.$refs.input.value = ''
-      } 
-   },
-  },
+    },
+    removeImg(){
+      if(this.statmet == this.Staments.loading) return false
+      this.$emit('remove')
+      URL.revokeObjectURL(this.objUrl)
+      this.$refs.input.value = ''
+      this.statmet = this.Staments.reseted
+    }
+  }
+
 };
 </script>
 
