@@ -1,6 +1,7 @@
 <template>
   <div v-if="!sensors">Loading...</div>
   <template v-else>
+    <div>{{ test }}</div>
     <SensorsDataRow v-for="sensor in sensors" :key="sensor.id" :sensor="sensor" />
   </template>
 </template>
@@ -9,6 +10,7 @@
 import { SensorsDataController } from '../services/SensorsDataController';
 import { SensorsDataStreamingService } from '../services/SensorsDataStreamingService';
 import SensorsDataRow from './SensorsDataRow';
+import { ref } from '../vendor/vue.esm-browser.js';
 
 export default {
   name: 'SensorsDataView',
@@ -18,16 +20,19 @@ export default {
   data() {
     return {
       sensors: null,
+      test: 0,
     };
   },
 
   mounted() {
-    this.sensorsDataController = new SensorsDataController(new SensorsDataStreamingService());
+    const SensorsDataStream = new SensorsDataStreamingService()
+    this.sensorsDataController = new SensorsDataController(SensorsDataStream);
+    
     this.sensorsDataController.addDataCallback(this.callback);
 
     // Раз в секунду запрашиваем и выводим новые данные сенсоров
     setInterval(() => {
-      this.sensorsDataController.getData();
+      this.sensorsDataController.getData(); 
     }, 1000);
   },
 
@@ -42,7 +47,8 @@ export default {
     },
 
     setData(sensors) {
-      this.sensors = sensors;
+      this.test++
+      this.sensors =  sensors ; 
     },
   },
 };
