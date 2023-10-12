@@ -20,6 +20,8 @@ export default {
 
     const { history } = refHistory(this.source);
     this.history = history;
+
+    window.db = history
   },
 };
 </script>
