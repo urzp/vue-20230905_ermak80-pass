@@ -1,7 +1,7 @@
 <template>
   <main class="mini-messenger">
     <ul class="messages">
-      <li v-for="message in messages" :key="message.id" class="message">
+      <li v-for="message in messages" :key="message.id" ref="msg" class="message">
         {{ message.text }}
       </li>
     </ul>
@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import {reactive, computed, ref, toRefs, watch } from '../vendor/vue.esm-browser.js';
+import { nextTick } from 'vue'
 let lastId = 0;
 
 export default {
@@ -26,7 +28,7 @@ export default {
         { id: lastId++, text: 'First message' },
         { id: lastId++, text: 'Second message' },
         { id: lastId++, text: 'Third message' },
-        { id: lastId++, text: 'Forth message' },
+        { id: lastId++, text: 'Forth message' },       
       ],
     };
   },
@@ -36,13 +38,20 @@ export default {
       this.send();
     },
 
-    send() {
+    async send() {
       this.messages.push({
         id: lastId++,
         text: this.newMessage,
       });
       this.newMessage = '';
+      await nextTick()
+      this.scrollLastMesage()
     },
+
+    scrollLastMesage(){
+      let lastRefMsg = this.$refs.msg.length - 1
+      this.$refs.msg[lastRefMsg].scrollIntoView()
+    }
   },
 };
 </script>
