@@ -1,3 +1,4 @@
+import { watch } from 'vue';
 import { ref } from 'vue';
 
 /**
@@ -6,18 +7,13 @@ import { ref } from 'vue';
  * @returns {Object<{ history: Ref<T[]> }>} - История изменения source
  */
 export function refHistory(source) {
-  //const history = ref();
-  // ...
-  const history = new Proxy([],{
-    construct(target){
-      target.push(source.value)
+  const history = ref([]);
+  watch(()=>source.value,
+    (n,o)=>{
+      history.value.push(n)
     },
-    set(target,m,val){
-      target.push(val)
-    },
-    get(target){
-      return target
-    }
-  })
-  return { history };
+    {immediate:true}
+  )
+  
+   return { history };
 }

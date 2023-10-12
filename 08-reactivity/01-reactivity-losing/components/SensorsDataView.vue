@@ -1,7 +1,7 @@
 <template>
   <div v-if="!sensors">Loading...</div>
   <template v-else>
-    <SensorsDataRow v-for="sensor in sensors" :key="sensor.id" :sensor="sensor" />
+    <SensorsDataRow v-for="sensor in output" :key="sensor.id" :sensor="sensor" />
   </template>
 </template>
 
@@ -19,8 +19,7 @@ export default {
   data() {
     return {
       sensors: null,
-      test: 0,
-      test2: 0,
+      sensorsValues: [],
     };
   },
 
@@ -48,13 +47,37 @@ export default {
 
     setData(sensors) {
       this.sensors = {}
+      this.sensorsValues = []
       for (let key in sensors){
         let sensor = sensors[key]
          this.sensors[key] = sensor
-         this.sensors[key].value = ref(sensor.value)
+         this.sensorsValues.push(sensor.value)
       }
     },
   },
+  watch:{
+    sensorsValues(n,o){
+      console.log(n[0],o[0])
+      let i=0
+      for (let key in this.sensors){
+        this.sensors[key].value = this.sensorsValues[i]
+        i++
+      }
+    }
+  },
+  computed:{
+    output(){
+      let i=0
+      let output = {}
+      for (let key in this.sensors){
+        let sensor = this.sensors[key]
+        output = sensor
+        output[key].value = this.sensorsValues[i]
+        i++
+      }
+      return output   
+    }
+  }
 };
 </script>
 
