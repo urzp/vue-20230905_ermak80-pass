@@ -14,7 +14,6 @@
 </template>
 
 <script>
-import {reactive, computed, ref, toRefs, watch } from '../vendor/vue.esm-browser.js';
 import { nextTick } from 'vue'
 let lastId = 0;
 
