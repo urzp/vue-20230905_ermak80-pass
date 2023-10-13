@@ -8,12 +8,14 @@ import { ref } from 'vue';
  */
 export function refHistory(source) {
   const history = ref([]);
-  watch(()=>source.value,
-    (n,o)=>{
-      history.value.push(n)
-    },
-    {immediate:true}
-  )
+
+  watch(
+  ()=>source.value,
+  (n)=>{history.value.push(n)},
+  {
+    immediate:true,
+    flush: 'sync',
+  })
   
    return { history };
 }
