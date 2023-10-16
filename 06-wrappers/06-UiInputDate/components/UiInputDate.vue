@@ -1,6 +1,6 @@
 eslint-disable vue/valid-v-slot 
 <template >  
-   <UiInput ref="input" v-bind="$attrs" :type="type" :step="step" v-model="modelProxy">
+   <UiInput ref="input" :type="type" :step="step" v-model="modelProxy">
     <template v-if="$slots['left-icon']" #left-icon>
       <slot name="left-icon" />
     </template>
@@ -11,7 +11,6 @@ eslint-disable vue/valid-v-slot
 import UiInput from './UiInput.vue';
 
 export default {
-  inheritAttrs: false,
   name: 'UiInputDate',
   components: { UiInput },
   props:{
