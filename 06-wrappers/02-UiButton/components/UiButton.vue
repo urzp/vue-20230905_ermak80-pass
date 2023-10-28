@@ -1,5 +1,5 @@
 <template>
-  <component :is="tag" :type="type" class="button" :class="class_button"><slot/></component>
+  <component :is="tag" :type="type" class="button" :class="[ 'button_'+ variant, {'button_block': block }]"><slot/></component>
 </template>
 
 <script>
@@ -17,12 +17,6 @@ export default {
     block: Boolean, 
   },
   computed:{
-    class_button(){
-      let classes = []
-      classes.push(this.variant!='button'?'button_' + this.variant:this.variant)
-      if(this.block)classes.push('button_block')
-      return classes
-    },
     type(){
       return this.tag=='button'?this.tag:null
     }
